@@ -9,6 +9,6 @@
 4. Open this directory (data-structures-monday) into your favorite IDE
 5. **NOTE**: Don't modify the files. This will cause trouble to further downloadings. If you want to modify them, copy in a different project.
 
-## Every other week
+### Every other week
 1. Open a terminal (PowerShell for windows) **OR** the terminal in VS Code
 2. In the folder (data-structures-monday) of the project: ```git pull```. This will bring new examples.
