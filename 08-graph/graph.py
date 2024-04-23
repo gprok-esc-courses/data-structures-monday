@@ -96,24 +96,116 @@ class Graph:
     def dfs(self, start):
         pass
 
+    def relax(self, va, vb, w):
+        if va.distance + w < vb.distance:
+            vb.distance = va.distance + w
+            vb.parent = va
+
+    def dijkstra(self, start):
+        Q = []
+        self.init_bfs()
+        self.vertices[start].distance = 0
+        for key in self.vertices:
+            Q.append(self.vertices[key])
+        while len(Q) > 0:
+            # sort Q in order to bring min distance fisrt
+            Q.sort(key=lambda x : x.distance)
+            u = Q.pop(0)
+            for edge in u.edges:
+                v = edge.destination
+                w = edge.weight
+                self.relax(u, v, w)
+
+    def bellman_ford(self, start):
+        self.init_bfs()
+        self.vertices[start].distance = 0
+        for i in range(len(self.vertices)):
+            for key in self.vertices:
+                u = self.vertices[key]
+                for edge in u.edges:
+                    v = edge.destination
+                    w = edge.weight
+                    self.relax(u, v, w)
+        for key in self.vertices:
+            u = self.vertices[key]
+            for edge in u.edges:
+                v = edge.destination
+                w = edge.weight
+                if v.distance > u.distance + w:
+                    return False
+        return True
+
+
+
+
+
     def display(self):
         for key in self.vertices:
             print(self.vertices[key])
-        
+            
+
 
 if __name__ == "__main__":
+    # TEST BFS
+    # graph = Graph()
+    # keys = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I']
+    # edges = [['A', 'B'], ['A', 'C'], ['A', 'D'], ['B', 'D'], ['B', 'E'], 
+    #          ['C', 'F'], ['D', 'G'], ['E', 'G'], ['E', 'H'], ['F', 'G'],
+    #          ['F', 'I'], ['G', 'H'], ['H', 'I']]
+    # for key in keys:
+    #     graph.add_vertex(key)
+    # for edge in edges:
+    #     graph.add_edge(edge[0], edge[1])
+
+    # graph.display()
+    # graph.bfs('A')
+    # graph.shortest_path('H')
+    # graph.shortest_path_recursive('H')
+    # print() 
+
+    # TEST DIJKSTRA
+    # graph = Graph()
+    # keys = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I']
+    # edges = [['A', 'B', 3], ['A', 'C', 3], ['A', 'D', 4], ['B', 'D', 3], ['B', 'E', 6], 
+    #          ['C', 'F', 1], ['D', 'G', 2], ['E', 'G', 1], ['E', 'H', 4], ['F', 'G', 2],
+    #          ['F', 'I', 2], ['G', 'H', 3], ['H', 'I', 1]]
+    # for key in keys:
+    #     graph.add_vertex(key)
+    # for edge in edges:
+    #     graph.add_edge(edge[0], edge[1], edge[2])
+    # graph.display()
+
+    # graph.dijkstra('A')
+
+    # for key in graph.vertices:
+    #     vertex = graph.vertices[key]
+    #     print(vertex.key, 'D:', vertex.distance)
+    # graph.shortest_path('H')
+
     graph = Graph()
-    keys = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I']
-    edges = [['A', 'B'], ['A', 'C'], ['A', 'D'], ['B', 'D'], ['B', 'E'], 
-             ['C', 'F'], ['D', 'G'], ['E', 'G'], ['E', 'H'], ['F', 'G'],
-             ['F', 'I'], ['G', 'H'], ['H', 'I']]
+    graph.directed = True
+    # keys = ['s', 't', 'y', 'x', 'z']
+    # edges = [ ['s', 't', 10], ['s', 'y', 5], ['t', 'x', 1], ['t', 'y', 2], ['y', 't', 3], ['y', 'x', 9], 
+    #           ['y', 'z', 2], ['z', 's', 7], ['x', 'z', 4], ['z', 'x', 6]
+    #         ]
+    keys = ['s', 't', 'x', 'y', 'z']
+    edges = [
+        ['s', 't', 6], ['s', 'y', 7], ['t', 'x', 5], ['x', 't', -2], ['t', 'y', 8], ['y', 'z', 9],
+        ['z', 's', 2], ['t', 'z', -4], ['z', 'x', 7], ['y', 'x', -3]
+    ]
+    
     for key in keys:
         graph.add_vertex(key)
     for edge in edges:
-        graph.add_edge(edge[0], edge[1])
-
+        graph.add_edge(edge[0], edge[1], edge[2])
     graph.display()
-    graph.bfs('A')
-    graph.shortest_path('H')
-    graph.shortest_path_recursive('H')
-    print() 
+
+    result = graph.bellman_ford('s')
+
+    for key in graph.vertices:
+        vertex = graph.vertices[key]
+        print(vertex.key, 'dist: ', vertex.distance, 'parent:', vertex.parent.key if vertex.parent is not None else 'None')
+    if result:
+        graph.shortest_path('x')
+    else:
+        print("No shortest path")
